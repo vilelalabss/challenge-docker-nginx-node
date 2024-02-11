@@ -9,8 +9,8 @@ services:
     working_dir: /usr/src/app
     volumes:
       - ./node_app:/usr/src/app
-    ports:
-      - "8080:3000"
+    # ports:
+    #   - "8080:3000"
     depends_on:
       - mysql
     networks:
@@ -40,10 +40,10 @@ services:
     restart: always
     tty: true    
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ./nginx_conf:/etc/nginx/conf.d
-      - ./node_app:/usr/share/nginx/html
+      - ./nginx_logs:/var/log/nginx  # Adicione esta linha      
     depends_on:
       - node
     networks:
