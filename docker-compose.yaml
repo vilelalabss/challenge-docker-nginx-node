@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  node:
+    image: node:15
+    container_name: app
+    restart: always
+    tty: true
+    working_dir: /usr/src/app
+    volumes:
+      - ./node_app:/usr/src/app
+    ports:
+      - "8080:3000"
+    depends_on:
+      - mysql
+    networks:
+      - globalnet      
+    command: >
+      sh -c "npm install && node index.js"
+
+  mysql:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    tty: true
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nodedb
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - globalnet      
+
+  nginx:
+    image: nginx:latest
+    container_name: proxy
+    restart: always
+    tty: true    
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx_conf:/etc/nginx/conf.d
+      - ./node_app:/usr/share/nginx/html
+    depends_on:
+      - node
+    networks:
+      - globalnet
+
+networks:
+  globalnet:
+    driver: bridge
